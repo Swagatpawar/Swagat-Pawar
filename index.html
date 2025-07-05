@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        nav {
+            background-color: #0d6efd;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        nav h1 {
+            font-size: 1.8rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #0d6efd;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #084298;
+        }
+
+        .patient-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .patient-list li {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .nav-link {
+            cursor: pointer;
+        }
+
+        .nav-link.active {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <h1>Hospital App</h1>
+        <ul>
+            <li><a class="nav-link" id="dashboardLink">Dashboard</a></li>
+            <li><a class="nav-link" id="registerLink">Register Patient</a></li>
+            <li><a class="nav-link" id="viewLink">View Patients</a></li>
+        </ul>
+    </nav>
+
+    <div class="container" id="dashboard">
+        <h2>Welcome to Hospital Management System</h2>
+        <p>Manage patient information efficiently.</p>
+    </div>
+
+    <div class="container" id="register" style="display: none;">
+        <h2>Register New Patient</h2>
+        <form id="patientForm">
+            <input type="text" id="name" placeholder="Patient Name" required>
+            <input type="number" id="age" placeholder="Age" required>
+            <input type="text" id="disease" placeholder="Disease" required>
+            <button type="submit">Register Patient</button>
+        </form>
+    </div>
+
+    <div class="container" id="view" style="display: none;">
+        <h2>Registered Patients</h2>
+        <ul id="patientList" class="patient-list"></ul>
+    </div>
+
+    <script>
+        // Navigation Handling
+        const dashboard = document.getElementById('dashboard');
+        const register = document.getElementById('register');
+        const view = document.getElementById('view');
+
+        const dashboardLink = document.getElementById('dashboardLink');
+        const registerLink = document.getElementById('registerLink');
+        const viewLink = document.getElementById('viewLink');
+
+        const links = document.querySelectorAll('.nav-link');
+
+        dashboardLink.addEventListener('click', () => showSection('dashboard'));
+        registerLink.addEventListener('click', () => showSection('register'));
+        viewLink.addEventListener('click', () => {
+            showSection('view');
+            displayPatients();
+        });
+
+        function showSection(sectionId) {
+            dashboard.style.display = 'none';
+            register.style.display = 'none';
+            view.style.display = 'none';
+
+            document.getElementById(sectionId).style.display = 'block';
+
+            links.forEach(link => link.classList.remove('active'));
+            if (sectionId === 'dashboard') dashboardLink.classList.add('active');
+            if (sectionId === 'register') registerLink.classList.add('active');
+            if (sectionId === 'view') viewLink.classList.add('active');
+        }
+
+        // Patient Form Logic
+        const form = document.getElementById('patientForm');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const disease = document.getElementById('disease').value;
+
+            let patients = JSON.parse(localStorage.getItem('patients')) || [];
+            patients.push({ name, age, disease });
+            localStorage.setItem('patients', JSON.stringify(patients));
+
+            alert('Patient Registered Successfully!');
+            form.reset();
+        });
+
+        function displayPatients() {
+            const patientList = document.getElementById('patientList');
+            patientList.innerHTML = '';
+
+            let patients = JSON.parse(localStorage.getItem('patients')) || [];
+
+            if (patients.length === 0) {
+                patientList.innerHTML = '<li>No patients registered.</li>';
+            } else {
+                patients.forEach(patient => {
+                    const li = document.createElement('li');
+                    li.textContent = `Name: ${patient.name} | Age: ${patient.age} | Disease: ${patient.disease}`;
+                    patientList.appendChild(li);
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
